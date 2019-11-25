@@ -8,7 +8,7 @@ import texttable as tt
 import os
 import subprocess
 
-#Testing GIT
+#Testing GIT - branch only
 
 #Connect to DB
 con = lite.connect('link.db')
