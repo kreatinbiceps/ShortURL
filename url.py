@@ -8,6 +8,8 @@ import texttable as tt
 import os
 import subprocess
 
+#Testing GIT
+
 #Connect to DB
 con = lite.connect('link.db')
 cursor = con.cursor()
