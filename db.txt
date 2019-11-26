@@ -1,0 +1,19 @@
+location /vquw {
+        return 301 https://stackoverflow.com/questions/3833352/declare-variable-for-a-query-string;
+}
+
+location /bdul {
+        return 301 https://www.w3schools.com/python/python_functions.asp;
+}
+
+location /tsqs {
+        return 301 https://unix.stackexchange.com/questions/190495/how-to-execute-a-bash-command-in-a-python-script;
+}
+
+location /bary {
+        return 301 https://www.bleepingcomputer.com/news/security/fbi-warns-of-cyber-attacks-targeting-us-automotive-industry/;
+}
+
+location /quew {
+        return 301 https://stackoverflow.com/questions/4710067/using-python-for-deleting-a-specific-line-in-a-file;
+
