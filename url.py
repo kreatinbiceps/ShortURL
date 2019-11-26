@@ -8,7 +8,7 @@ import texttable as tt
 import os
 import subprocess
 
-#Connect to DB
+#Connect to the DB
 con = lite.connect('link.db')
 cursor = con.cursor()
 
