@@ -8,7 +8,6 @@ import texttable as tt
 import os
 import subprocess
 
-
 #Connect to DB
 con = lite.connect('link.db')
 cursor = con.cursor()
@@ -22,18 +21,41 @@ def randomString(stringLength=4):
 #Printing out the nginx config. Make sure you refer to the new file in your default.conf
 def createNginx():
 	saveFile = open('/etc/nginx/ownfiles/location-url.conf', 'a')
-	saveFile.write('\n\nlocation /'+ str(row[3]) +' {')
-	saveFile.write('\n\t')
-	saveFile.write('return 301 ' + row[1] + ';')
-	saveFile.write('\n}')
+#	saveFile = open('db.txt', 'a')
+	saveFile.write('\nlocation /'+ str(row[3]) +' {return 301 ' + row[1] + ';}')
+#	saveFile.write('\n\nlocation /'+ str(row[3]) +' {')
+#	saveFile.write('\n\t')
+#	saveFile.write('return 301 ' + row[1] + ';')
+#	saveFile.write('\n}')
 	saveFile.close()
+
+
+def delSql(chooseID):
+	cursor.execute('DELETE FROM url3 WHERE ID = ?', (chooseID,))
+	con.commit()
+	print("deleted from SQL")
+
+def delNginx(chooseID):
+	cursor.execute('SELECT * FROM url3 WHERE ID = ?', (chooseID,))
+	for row in cursor.fetchall():
+		print(row)
+		textprint = ('location /'+ str(row[3]) +' {return 301 ' + row[1] + ';}')
+		with open('/etc/nginx/ownfiles/location-url.conf', 'r') as f:
+			lines = f.readlines()
+		with open('/etc/nginx/ownfiles/location-url.conf', 'w') as f:
+			for line in lines:
+				if line.strip("\n") != textprint:
+					f.write(line)
+
+	subprocess.call(["sudo", "service", "nginx", "reload"])
+
 
 
 
 a = 1
 while a == 1:
 
-	userInput = int(input("Press 1 to add URL. Press 2 to show the table. Press 3 to quit\n"))
+	userInput = int(input("Press 1 to add URL. Press 2 to show the table. Press 3 to delete an entry. Press 9 to quit\n"))
 
 	if userInput == 1:
 
@@ -72,9 +94,15 @@ while a == 1:
 		s = tab.draw()
 		print (s)
 
-	elif userInput == 3:
-		#os.system('clear')
+	elif userInput == 9:
+		con.commit()
+		con.close()
 		break
-	
+
+	elif userInput == 3:
+		chooseID = input("What's your ID? ")
+		delNginx(chooseID)
+		delSql(chooseID)
+
 	else:
 		print("wtf")
