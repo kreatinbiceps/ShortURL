@@ -20,7 +20,7 @@ def randomString(stringLength=4):
         letters = string.ascii_lowercase
         return ''.join(random.choice(letters) for i in range (stringLength))
 
-
+#Printing out the nginx config. Make sure you refer to the new file in your default.conf
 def createNginx():
 	saveFile = open('/etc/nginx/ownfiles/location-url.conf', 'a')
 	saveFile.write('\n\nlocation /'+ str(row[3]) +' {')
@@ -32,7 +32,6 @@ def createNginx():
 
 
 a = 1
-
 while a == 1:
 
 	userInput = int(input("Press 1 to add URL. Press 2 to show the table. Press 3 to quit\n"))
