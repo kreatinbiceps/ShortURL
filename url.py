@@ -1,4 +1,4 @@
-	
+
 import random
 import time
 import string
@@ -7,11 +7,20 @@ import sys
 import texttable as tt
 import os
 import subprocess
+import re
 
 #Connect to the DB
 con = lite.connect('link.db')
 cursor = con.cursor()
 
+##GLOBAL VARIABLES##
+
+pattern = re.compile(
+ r'(http|ftp|https)://([\w-]+(?:(?:.[\w-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?', re.IGNORECASE)
+
+
+
+##FUNCTIONS##
 
 #Create random 4char string
 def randomString(stringLength=4):
@@ -49,25 +58,27 @@ def delNginx(chooseID):
 a = 1
 while a == 1:
 
-	userInput = int(input("Press 1 to add URL. Press 2 to show the table. Press 3 to delete an entry. Press 9 to quit\n"))
+	userInput = int(input("Press 1 to add URL. Press 2 to show the table. Press 3 to delete an entry. Press 4 to show nginx conf. Press 9 to quit\n"))
 
 	if userInput == 1: #Generating the URL. Adding the Original URL and New URL to SQLite3 database
 
 		longurl = input("Add your URL: ")
 		shorturl = randomString()
 
-		cursor.execute('INSERT INTO url3 VALUES(?, ?, ?, ?)', (None, longurl, None, shorturl))
+		result = re.search(pattern, longurl)
+		if result:
+			cursor.execute('INSERT INTO url3 VALUES(?, ?, ?, ?)', (None, longurl, None, shorturl))
+			print ("\nThis is your new URL: miraa.se/" + shorturl + "\n")
+			cursor.execute('SELECT * from url3 WHERE SHORTURL = ?', (shorturl,) )
+			for row in cursor.fetchall():
+				createNginx()
+			con.commit()
+			subprocess.call(["sudo", "service", "nginx", "reload"])
 
-		print ("\nThis is your new URL: miraa.se/" + shorturl + "\n")
+		else:
+			print ("Insert a valid URL. For example: https://www.google.com/search?q=python")
+			continue
 
-		cursor.execute('SELECT * from url3 WHERE SHORTURL = ?', (shorturl,) )
-		for row in cursor.fetchall():
-			createNginx()
-
-
-		con.commit()
-
-		subprocess.call(["sudo", "service", "nginx", "reload"])
 
 	elif userInput == 2:
 		tab = tt.Texttable()
@@ -90,6 +101,9 @@ while a == 1:
 		chooseID = input("What's your ID? ")
 		delNginx(chooseID)
 		delSql(chooseID)
+
+	elif userInput == 4:
+		subprocess.call(["sudo", "cat", "/etc/nginx/ownfiles/location-url.conf"])
 
 	else:
 		print("wtf")
