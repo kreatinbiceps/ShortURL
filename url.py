@@ -58,52 +58,55 @@ def delNginx(chooseID):
 a = 1
 while a == 1:
 
-	userInput = int(input("Press 1 to add URL. Press 2 to show the table. Press 3 to delete an entry. Press 4 to show nginx conf. Press 9 to quit\n"))
+	try:
+		userInput = int(input("Press 1 to add URL. Press 2 to show the table. Press 3 to delete an entry. Press 4 to show nginx conf. Press 9 to quit\n"))
 
-	if userInput == 1: #Generating the URL. Adding the Original URL and New URL to SQLite3 database
+		if userInput == 1: #Generating the URL. Adding the Original URL and New URL to SQLite3 database
 
-		longurl = input("Add your URL: ")
-		shorturl = randomString()
+			longurl = input("Add your URL: ")
+			shorturl = randomString()
 
-		result = re.search(pattern, longurl)
-		if result:
-			cursor.execute('INSERT INTO url3 VALUES(?, ?, ?, ?)', (None, longurl, None, shorturl))
-			print ("\nThis is your new URL: miraa.se/" + shorturl + "\n")
-			cursor.execute('SELECT * from url3 WHERE SHORTURL = ?', (shorturl,) )
+			result = re.search(pattern, longurl)
+			if result:
+				cursor.execute('INSERT INTO url3 VALUES(?, ?, ?, ?)', (None, longurl, None, shorturl))
+				print ("\nThis is your new URL: miraa.se/" + shorturl + "\n")
+				cursor.execute('SELECT * from url3 WHERE SHORTURL = ?', (shorturl,) )
+				for row in cursor.fetchall():
+					createNginx()
+				con.commit()
+				subprocess.call(["sudo", "service", "nginx", "reload"])
+
+			else:
+				print ("Insert a valid URL. For example: https://www.google.com/search?q=python")
+				continue
+
+
+		elif userInput == 2:
+			tab = tt.Texttable()
+			col_name = ['ID', 'ORIGURL', 'SHORTURL']
+			tab.header(col_name)
+
+			cursor.execute('SELECT ID, ORIGURL, SHORTURL FROM url3')
 			for row in cursor.fetchall():
-				createNginx()
+				tab.add_row(row)
+
+			s = tab.draw()
+			print (s)
+
+		elif userInput == 9:
 			con.commit()
-			subprocess.call(["sudo", "service", "nginx", "reload"])
+			con.close()
+			break
+
+		elif userInput == 3:
+			chooseID = input("What's your ID? ")
+			delNginx(chooseID)
+			delSql(chooseID)
+
+		elif userInput == 4:
+			subprocess.call(["sudo", "cat", "/etc/nginx/ownfiles/location-url.conf"])
 
 		else:
-			print ("Insert a valid URL. For example: https://www.google.com/search?q=python")
-			continue
-
-
-	elif userInput == 2:
-		tab = tt.Texttable()
-		col_name = ['ID', 'ORIGURL', 'SHORTURL']
-		tab.header(col_name)
-
-		cursor.execute('SELECT ID, ORIGURL, SHORTURL FROM url3')
-		for row in cursor.fetchall():
-			tab.add_row(row)
-
-		s = tab.draw()
-		print (s)
-
-	elif userInput == 9:
-		con.commit()
-		con.close()
-		break
-
-	elif userInput == 3:
-		chooseID = input("What's your ID? ")
-		delNginx(chooseID)
-		delSql(chooseID)
-
-	elif userInput == 4:
-		subprocess.call(["sudo", "cat", "/etc/nginx/ownfiles/location-url.conf"])
-
-	else:
-		print("wtf")
+			print("That is not a valid option")
+	except:
+		print("Please choose from 1-4")
