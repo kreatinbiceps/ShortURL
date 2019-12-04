@@ -13,32 +13,32 @@ import re
 con = lite.connect('link.db')
 cursor = con.cursor()
 
-##GLOBAL VARIABLES##
+# GLOBAL VARIABLES
 
 pattern = re.compile(
  r'(http|ftp|https)://([\w-]+(?:(?:.[\w-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?', re.IGNORECASE)
 
 
 
-##FUNCTIONS##
+# FUNCTIONS
 
-#Create random 4char string
+# Create random 4char string
 def randomString(stringLength=4):
         letters = string.ascii_lowercase
         return ''.join(random.choice(letters) for i in range (stringLength))
 
-#Creating the nginx config. Make sure you refer to the new file in your default.conf in nginx
+# Creating the nginx config. Make sure you refer to the new file in your default.conf in nginx
 def createNginx():
 	saveFile = open('/etc/nginx/ownfiles/location-url.conf', 'a')
 	saveFile.write('\nlocation /'+ str(row[3]) +' {return 301 ' + row[1] + ';}')
 	saveFile.close()
 
-#Deleting row from SQLite3 database
+# Deleting row from SQLite3 database
 def delSql(chooseID):
 	cursor.execute('DELETE FROM url3 WHERE ID = ?', (chooseID,))
 	con.commit()
 
-#Deleting the line of text on the nginx configuration file and reloading nginx
+# Deleting the line of text on the nginx configuration file and reloading nginx
 def delNginx(chooseID):
 	cursor.execute('SELECT * FROM url3 WHERE ID = ?', (chooseID,))
 	for row in cursor.fetchall():
@@ -109,4 +109,4 @@ while a == 1:
 		else:
 			print("That is not a valid option")
 	except:
-		print("Please choose from 1-4")
+		print("Please choose from the menu numbers")
