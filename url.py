@@ -59,14 +59,28 @@ a = 1
 while a == 1:
 
 	try:
-		userInput = int(input("Press 1 to add URL. Press 2 to show the table. Press 3 to delete an entry. Press 4 to show nginx conf. Press 9 to quit\n"))
+		userInput = int(input("\nMENU: Press 1 to add URL. Press 2 to show the table. Press 3 to delete an entry. Press 4 to show nginx conf. Press 9 to quit\nMake your choice: "))
 
 		if userInput == 1: #Generating the URL. Adding the Original URL and New URL to SQLite3 database
 
 			longurl = input("Add your URL: ")
-			shorturl = randomString()
+			random_or_own = input("Press 1 for choosing your own url or 2 for generating a random url: ")
+			if random_or_own == "1":
+				own_url = input("Insert your own url. Max 10 letters lowercase. miraa.se/")
+				if len(own_url) < 11 and own_url.islower() and own_url.isalpha():
+					shorturl = own_url
+				else:
+					print ("*** Only 10 letters and lowercase is allowed!! ***\n")
+					continue
 
-			result = re.search(pattern, longurl)
+			elif random_or_own == "2":
+				shorturl = randomString()
+			else:
+				print ("wrong input")
+				continue
+
+
+			result = re.search(pattern, longurl) #Matching the url against the REGEX
 			if result:
 				cursor.execute('INSERT INTO url3 VALUES(?, ?, ?, ?)', (None, longurl, None, shorturl))
 				print ("\nThis is your new URL: miraa.se/" + shorturl + "\n")
@@ -77,11 +91,11 @@ while a == 1:
 				subprocess.call(["sudo", "service", "nginx", "reload"])
 
 			else:
-				print ("Insert a valid URL. For example: https://www.google.com/search?q=python")
+				print ("\n*** Insert a valid URL. For example: https://www.google.com/search?q=python ***\n")
 				continue
 
 
-		elif userInput == 2:
+		elif userInput == 2: #Shows the table
 			tab = tt.Texttable()
 			col_name = ['ID', 'ORIGURL', 'SHORTURL']
 			tab.header(col_name)
@@ -105,7 +119,7 @@ while a == 1:
 
 		elif userInput == 4:
 			subprocess.call(["sudo", "cat", "/etc/nginx/ownfiles/location-url.conf"])
-
+			print("\n")
 		else:
 			print("That is not a valid option")
 	except:

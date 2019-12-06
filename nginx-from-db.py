@@ -26,6 +26,7 @@ def showSQL():
 
 
 showSQL()
+saveFile = open('testnginx.conf', 'w').close()
 
 cursor.execute('SELECT * from url3')
 for row in cursor.fetchall():
