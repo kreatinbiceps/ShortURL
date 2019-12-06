@@ -8,7 +8,7 @@ con = lite.connect('link.db')
 cursor = con.cursor()
 
 def createNginx():
-	saveFile = open('testnginx.conf', 'a')
+	saveFile = open('/etc/nginx/ownfiles/location-url.conf', 'a')
 	saveFile.write('\nlocation /'+ str(row[3]) +' {return 301 ' + row[1] + ';}')
 	saveFile.close()
 
@@ -26,7 +26,7 @@ def showSQL():
 
 
 showSQL()
-saveFile = open('testnginx.conf', 'w').close()
+saveFile = open('/etc/nginx/ownfiles/location-url.conf', 'w').close()
 
 cursor.execute('SELECT * from url3')
 for row in cursor.fetchall():
